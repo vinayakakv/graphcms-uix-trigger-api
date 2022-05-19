@@ -6,8 +6,12 @@ import {
 import { useEffect, useState } from "react"
 
 const declaration: FormSidebarExtensionDeclaration = {
-  name: "POST API",
-  description: "Call any POST endpoint",
+  name: "Trigger API",
+  description: `
+    Trigger a POST endpoint.
+    Sends current entity data in the JSON body.
+    Sends API key in 'authorization' header.
+  `,
   extensionType: "formSidebar",
   config: {
     API_KEY: {
