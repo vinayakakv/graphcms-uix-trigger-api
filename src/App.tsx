@@ -32,7 +32,7 @@ function SidebarComponent() {
   const { form, extension } = useFormSidebarExtension()
   const [dirty, setDirty] = useState(false)
   const [values, setValues] = useState<Record<string, any>>()
-  const [error, setError] = useState("")
+  const [message, setMessage] = useState("")
   const [loading, setLoading] = useState(false)
   useEffect(() => {
     form.getState().then(result => {
@@ -44,7 +44,7 @@ function SidebarComponent() {
   const ENDPOINT = extension.config.ENDPOINT as string
   const triggerApi = async () => {
     setLoading(true)
-    setError("")
+    setMessage("")
     await fetch(ENDPOINT, {
       method: "POST",
       headers: {
@@ -57,8 +57,9 @@ function SidebarComponent() {
         if (!response.ok) {
           throw new Error(`API returned ${response.status}`)
         }
+        setMessage("Success")
       })
-      .catch((error: Error) => setError(error.message))
+      .catch((error: Error) => setMessage(`Error: ${error.message}`))
       .finally(() => setLoading(false))
   }
   return (
@@ -70,7 +71,7 @@ function SidebarComponent() {
       >
         {loading ? "..." : "Trigger API"}
       </button>
-      {error && <p>Error: {error}</p>}
+      {message && <p>{message}</p>}
     </>
   )
 }
