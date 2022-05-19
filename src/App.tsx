@@ -21,34 +21,52 @@ const declaration: FormSidebarExtensionDeclaration = {
       displayName: "API Endpoint",
       required: true,
     },
-    INCLUDE_BODY: {
-      type: "boolean",
-      displayName: "Whether to include the complete object or not",
-      required: true,
-      defaultValue: true,
-    },
   },
 }
 
 function SidebarComponent() {
-  const { form } = useFormSidebarExtension()
+  const { form, extension } = useFormSidebarExtension()
   const [dirty, setDirty] = useState(false)
   const [values, setValues] = useState<Record<string, any>>()
+  const [error, setError] = useState("")
+  const [loading, setLoading] = useState(false)
   useEffect(() => {
     form.getState().then(result => {
       setDirty(result.dirty)
       setValues(result.values)
     })
   }, [form])
+  const API_KEY = extension.config.API_KEY as string
+  const ENDPOINT = extension.config.ENDPOINT as string
+  const triggerApi = async () => {
+    setLoading(true)
+    setError("")
+    await fetch(ENDPOINT, {
+      method: "POST",
+      headers: {
+        authorization: `Bearer ${API_KEY}`,
+        "content-type": "application/json",
+      },
+      body: JSON.stringify(values),
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`API returned ${response.status}`)
+        }
+      })
+      .catch((error: Error) => setError(error.message))
+      .finally(() => setLoading(false))
+  }
   return (
     <>
       {dirty && <p>Save the content before triggering API</p>}
       <button
-        onClick={() => console.log(JSON.stringify(values, null, 2))}
-        disabled={dirty}
+        onClick={async () => await triggerApi()}
+        disabled={dirty || loading}
       >
-        Trigger API
+        {loading ? "..." : "Trigger API"}
       </button>
+      {error && <p>Error: {error}</p>}
     </>
   )
 }
