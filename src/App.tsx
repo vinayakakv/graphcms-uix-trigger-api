@@ -29,7 +29,7 @@ const declaration: FormSidebarExtensionDeclaration = {
 }
 
 function SidebarComponent() {
-  const { form, extension } = useFormSidebarExtension()
+  const { form, extension, model } = useFormSidebarExtension()
   const [dirty, setDirty] = useState(false)
   const [values, setValues] = useState<Record<string, any>>()
   const [message, setMessage] = useState("")
@@ -51,7 +51,7 @@ function SidebarComponent() {
         authorization: `Bearer ${API_KEY}`,
         "content-type": "application/json",
       },
-      body: JSON.stringify(values),
+      body: JSON.stringify({ model: model.apiId, ...values }),
     })
       .then(response => {
         if (!response.ok) {
