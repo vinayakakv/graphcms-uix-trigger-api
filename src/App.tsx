@@ -49,7 +49,6 @@ function SidebarComponent() {
       method: "POST",
       headers: {
         authorization: `Bearer ${API_KEY}`,
-        "content-type": "application/json",
       },
       body: JSON.stringify({ model: model.apiId, ...values }),
     })
